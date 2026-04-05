@@ -3,15 +3,21 @@ spring:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
     open-in-view: false
+    # Manually setting the platform because we are disabling auto-detection
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
         format_sql: true
+        temp:
+          # This stops Hibernate from querying metadata (the cause of your crash)
+          use_jdbc_metadata_defaults: false
         jdbc:
           time_zone: UTC
           batch_size: 0
