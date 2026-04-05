@@ -27,9 +27,15 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfig.setAllowedOrigins(java.util.List.of("http://localhost:5173"));
+                    // ADD YOUR VERCEL URL HERE
+                    corsConfig.setAllowedOrigins(java.util.List.of(
+                            "http://localhost:5173",
+                            "https://banking-frontend-alpha.vercel.app"
+                    ));
                     corsConfig.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     corsConfig.setAllowedHeaders(java.util.List.of("*"));
+                    // MUST SET THIS TO TRUE for authentication headers to work
+                    corsConfig.setAllowCredentials(true);
                     return corsConfig;
                 }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
