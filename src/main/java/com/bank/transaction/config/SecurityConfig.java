@@ -40,11 +40,12 @@ public class SecurityConfig {
                 }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/accounts/**").permitAll()
-                        .requestMatchers("/api/v1/transactions/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // Add this first
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/accounts/**").permitAll()
+                .requestMatchers("/api/v1/transactions/**").permitAll()
+                .anyRequest().authenticated()
+        )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
