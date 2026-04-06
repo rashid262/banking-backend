@@ -10,19 +10,16 @@ spring:
       ddl-auto: update
     show-sql: true
     open-in-view: false
-    # Manually setting the platform because we are disabling auto-detection
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
         format_sql: true
         temp:
-          # This stops Hibernate from querying metadata (the cause of your crash)
           use_jdbc_metadata_defaults: false
         jdbc:
           time_zone: UTC
           batch_size: 0
 
-spring:
   mail:
     host: smtp.gmail.com
     port: 465
@@ -32,12 +29,11 @@ spring:
       mail:
         smtp:
           auth: true
-          # For Port 465, SSL must be TRUE and StartTLS should be FALSE
+          # Port 465 requires SSL enabled and StartTLS disabled
           ssl:
             enable: true
           starttls:
             enable: false
-          # This helps Spring Boot find the right socket factory for SSL
           socketFactory:
             port: 465
             class: javax.net.ssl.SSLSocketFactory
