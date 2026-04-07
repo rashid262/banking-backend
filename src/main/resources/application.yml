@@ -19,16 +19,18 @@ spring:
 
   mail:
     host: smtp.gmail.com
-    port: 587
+    port: ${MAIL_PORT:587}
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
           auth: true
+          # These placeholders match the keys in your Render Dashboard screenshot
           starttls:
-            enable: true
-            required: true
+            enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE:true}
+          ssl:
+            enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_ENABLE:false}
           connectiontimeout: 10000
           timeout: 10000
           writetimeout: 10000
@@ -39,4 +41,5 @@ spring:
 
 app:
   verification:
+    # This now dynamically points to your frontend or backend URL
     url: ${APP_BASE_URL}/api/v1/auth/verify?token=

@@ -2,12 +2,13 @@ package com.bank.transaction.service;
 
 import com.bank.transaction.domain.Account;
 import com.bank.transaction.domain.User;
-import com.bank.transaction.dto.AuthRequest; // 👈 Needed for login
-import com.bank.transaction.dto.AuthResponse; // 👈 Needed for login
+import com.bank.transaction.dto.AuthRequest;
+import com.bank.transaction.dto.AuthResponse;
 import com.bank.transaction.enums.Role;
 import com.bank.transaction.repository.AccountRepository;
 import com.bank.transaction.repository.UserRepository;
-import com.bank.transaction.security.JwtUtil; // 👈 Needed for login
+import com.bank.transaction.security.JwtUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +27,12 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
+    @Value("${app.verification.url}")
+    private String verificationBaseUrl;
+
+    @Value("${spring.mail.username}")
+    private String fromEmail;
+
     private static final String CHAR_POOL = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%";
     private final SecureRandom random = new SecureRandom();
 
@@ -37,7 +44,6 @@ public class AuthService {
         this.mailSender = mailSender;
     }
 
-    // 🛡️ --- ADDED: LOGIN METHOD ---
     public AuthResponse login(AuthRequest request) {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -51,11 +57,9 @@ public class AuthService {
         }
 
         String token = JwtUtil.generateToken(user.getUsername(), user.getRole().name());
-
         return new AuthResponse(token, user.getUsername(), user.getAccountId(), user.getRole().name());
     }
 
-    // --- 1. SELF REGISTRATION ---
     @Transactional
     public String register(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
@@ -72,7 +76,6 @@ public class AuthService {
         return "Registration successful! Check your email to verify.";
     }
 
-    // --- 2. ADMIN PROVISIONING ---
     @Transactional
     public String provisionByAdmin(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
@@ -112,21 +115,25 @@ public class AuthService {
     public void sendEmail(String email, String token, String tempPass) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
             message.setTo(email);
             message.setSubject("Universal Bank - Verify Your Account");
 
-            String body = "Welcome to Universal Bank!\n\n";
+            StringBuilder body = new StringBuilder("Welcome to Universal Bank!\n\n");
             if (tempPass != null) {
-                body += "An account was created for you by an administrator.\n";
-                body += "Your Temporary Password is: " + tempPass + "\n\n";
+                body.append("An account was created for you by an administrator.\n");
+                body.append("Your Temporary Password is: ").append(tempPass).append("\n\n");
             }
-            body += "Please verify your account by clicking the link below:\n";
-            body += "http://localhost:8080/api/v1/auth/verify?token=" + token;
+            body.append("Please verify your account by clicking the link below:\n");
+            body.append(verificationBaseUrl).append(token);
 
-            message.setText(body);
+            message.setText(body.toString());
             mailSender.send(message);
+            System.out.println("✅ Email successfully sent to " + email);
         } catch (Exception e) {
-            System.err.println("❌ Mail Error: " + e.getMessage());
+            // Log full error for Render troubleshooting
+            System.err.println("❌ Mail Delivery Failed: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -135,12 +142,10 @@ public class AuthService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 1. Verify old password matches database hash
         if (!passwordEncoder.matches(oldPassword, user.getPasswordHash())) {
             throw new RuntimeException("The current password you entered is incorrect.");
         }
 
-        // 2. Hash and save the new password
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
