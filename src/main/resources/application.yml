@@ -17,23 +17,22 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
 
-  mail:
-    host: smtp.gmail.com
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          # These placeholders match the keys in your Render Dashboard screenshot
-          starttls:
-            enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE:true}
-          ssl:
-            enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_ENABLE:false}
-          connectiontimeout: 10000
-          timeout: 10000
-          writetimeout: 10000
+mail:
+  host: smtp.gmail.com
+  port: ${MAIL_PORT:465}
+  username: ${MAIL_USERNAME}
+  password: ${MAIL_PASSWORD}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        ssl:
+          enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_ENABLE:true}
+        starttls:
+          enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE:false}
+        connectiontimeout: 15000
+        timeout: 15000
+        writetimeout: 15000
 
   jackson:
     serialization:
