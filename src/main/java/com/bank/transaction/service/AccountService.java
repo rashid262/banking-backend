@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.security.SecureRandom; // 👈 For secure passwords
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -78,7 +78,7 @@ public class AccountService {
         if (accountRepository.existsById(accountId)) {
             throw new RuntimeException("Account ID " + accountId + " already exists.");
         }
-        if (userRepository.existsByEmail(email)) { // 👈 Added: Prevent duplicate emails
+        if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("Email " + email + " is already registered.");
         }
 
@@ -95,7 +95,7 @@ public class AccountService {
         User newUser = User.builder()
                 .username(username)
                 .email(email)
-                .passwordHash(passwordEncoder.encode(tempPassword)) // 🛡️ Securely Encoded
+                .passwordHash(passwordEncoder.encode(tempPassword))
                 .accountId(accountId)
                 .role(Role.CUSTOMER)
                 .isVerified(false)
