@@ -17,26 +17,26 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
 
-mail:
-  host: smtp.gmail.com
-  port: ${MAIL_PORT:465}
-  username: ${MAIL_USERNAME}
-  password: ${MAIL_PASSWORD}
-  properties:
-    mail:
-      smtp:
-        auth: true
-        ssl:
-          enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_ENABLE:true}
-        starttls:
-          enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE:false}
-        connectiontimeout: 15000
-        timeout: 15000
-        writetimeout: 15000
+  mail:
+    host: smtp.gmail.com
+    port: ${MAIL_PORT:465}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_ENABLE:true}
+          starttls:
+            enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE:false}
+          connectiontimeout: 15000
+          timeout: 15000
+          writetimeout: 15000
 
-  jackson:
-    serialization:
-      write-dates-as-timestamps: false
+    jackson:
+      serialization:
+        write-dates-as-timestamps: false
 
 app:
   verification:
